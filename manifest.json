@@ -1,0 +1,24 @@
+{
+  "name": "BotSleek Chatbot Creator",
+  "short_name": "BotSleek",
+  "description": "Your complete ai chatbot solution, powered by BotSleek",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F7F9FC",
+  "theme_color": "#1A2B3C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://crm.megalive.ir/assets/e4e996c5-f5e3-440b-9e0d-bb99627476c2",
+      "type": "image/png",
+      "purpose": "any maskable",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://crm.megalive.ir/assets/e4e996c5-f5e3-440b-9e0d-bb99627476c2",
+      "type": "image/png",
+      "purpose": "any maskable",
+      "sizes": "512x512"
+    }
+  ]
+}
