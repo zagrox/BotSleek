@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Bot, Settings, Globe, PlusCircle, Crown, MessageSquare, HardDrive, Cpu, AlertTriangle, ArrowUpCircle, FileText, Server } from 'lucide-react';
 import { Chatbot, TabType, Plan } from '../../types';
@@ -200,28 +199,28 @@ const ManageBots: React.FC<Props> = ({ chatbots, onUpdateChatbot, onSelectChatbo
                       <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg shrink-0"><MessageSquare size={14} /></div>
                       <div className="min-w-0">
                           <p className="text-[10px] text-gray-500">Conversations</p>
-                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{bot.chatbot_messages.toLocaleString('en-US')}</p>
+                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{(bot.chatbot_messages || 0).toLocaleString('en-US')}</p>
                       </div>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-800/50 p-2.5 rounded-xl flex items-center gap-2.5">
                       <div className="p-1.5 bg-amber-100 text-amber-600 rounded-lg shrink-0"><HardDrive size={14} /></div>
                       <div className="min-w-0">
                           <p className="text-[10px] text-gray-500">Storage (MB)</p>
-                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{bot.chatbot_storage.toLocaleString('en-US')}</p>
+                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{(bot.chatbot_storage || 0).toLocaleString('en-US')}</p>
                       </div>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-800/50 p-2.5 rounded-xl flex items-center gap-2.5">
                       <div className="p-1.5 bg-purple-100 text-purple-600 rounded-lg shrink-0"><FileText size={14} /></div>
                       <div className="min-w-0">
                           <p className="text-[10px] text-gray-500">Files</p>
-                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{bot.chatbot_llm.toLocaleString('en-US')}</p>
+                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{(bot.chatbot_llm || 0).toLocaleString('en-US')}</p>
                       </div>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-800/50 p-2.5 rounded-xl flex items-center gap-2.5">
                       <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-lg shrink-0"><Server size={14} /></div>
                       <div className="min-w-0">
                           <p className="text-[10px] text-gray-500">Vectors</p>
-                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{bot.chatbot_vector.toLocaleString('en-US')}</p>
+                          <p className="font-bold text-gray-800 dark:text-white font-mono text-sm">{(bot.chatbot_vector || 0).toLocaleString('en-US')}</p>
                       </div>
                   </div>
               </div>

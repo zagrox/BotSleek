@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { readItems, deleteItem } from '@directus/sdk';
 import { directus } from '../../services/directus';
@@ -38,7 +37,7 @@ const MyOrders: React.FC<MyOrdersProps> = ({ onRenew }) => {
         ]);
 
         setPlans(fetchedPlans);
-        setOrders(fetchedOrders as Order[]);
+        setOrders(fetchedOrders as unknown as Order[]);
       } catch (err: any) {
         console.error("Failed to load orders:", JSON.stringify(err, null, 2));
         const msg = err?.errors?.[0]?.message || "Error receiving orders list.";
@@ -136,7 +135,7 @@ const MyOrders: React.FC<MyOrdersProps> = ({ onRenew }) => {
     
     const plan = plans.find(p => 
       p.id === Number(planId) || 
-      (typeof planId === 'object' && (planId as any)?.id === p.id) ||
+      (typeof planId === 'object' && (planId as any)?.id === plan.id) ||
       String(p.plan_name || '').toLowerCase() === String(planId || '').toLowerCase()
     );
     

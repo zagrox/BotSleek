@@ -1,4 +1,3 @@
-
 import { directus } from './directus';
 import { readItems, readItem, createItem, updateItem, readFolders, createFolder, readFiles, readSingleton } from '@directus/sdk';
 import { Chatbot } from '../types';
@@ -45,8 +44,8 @@ export const syncProfileStats = async (userId: string): Promise<void> => {
       fields: ['id']
     }));
 
-    if (profiles && profiles.length > 0) {
-      const profileId = profiles[0].id;
+    if (profiles && (profiles as any[]).length > 0) {
+      const profileId = (profiles as any[])[0].id;
       // @ts-ignore
       await directus.request(updateItem('profile', profileId, {
         profile_chatbots: bots.length,
@@ -70,14 +69,14 @@ export const recalculateChatbotStats = async (chatbotId: number): Promise<Chatbo
     if (!folderId && chatbot.chatbot_slug) {
         // @ts-ignore
         const llmFolders = await directus.request(readFolders({ filter: { name: { _eq: 'llm' } } }));
-        const llmFolderId = llmFolders[0]?.id;
+        const llmFolderId = (llmFolders as any[])[0]?.id;
         if (llmFolderId) {
             // @ts-ignore
             const botFolders = await directus.request(readFolders({ 
                 filter: { _and: [ { parent: { _eq: llmFolderId } }, { name: { _eq: chatbot.chatbot_slug } } ] } 
             }));
-            if (botFolders && botFolders.length > 0) {
-                folderId = botFolders[0].id;
+            if ((botFolders as any[]) && (botFolders as any[]).length > 0) {
+                folderId = (botFolders as any[])[0].id;
                 // @ts-ignore
                 await directus.request(updateItem('chatbot', chatbotId, { chatbot_folder: folderId }));
             }
@@ -120,7 +119,7 @@ export const createChatbot = async (name: string, slug: string, businessName: st
     let defaultAvatar = null;
     try {
         // @ts-ignore
-        const config = await directus.request(readSingleton('configuration', { fields: ['app_avatar'] }));
+        const config = await directus.request(readSingleton('configuration', { fields: ['app_avatar'] })) as any;
         if (config && config.app_avatar) {
             defaultAvatar = typeof config.app_avatar === 'object' ? config.app_avatar.id : config.app_avatar;
         }
@@ -139,15 +138,15 @@ export const createChatbot = async (name: string, slug: string, businessName: st
       chatbot_storage: 0,
       chatbot_llm: 0,
       chatbot_logo: defaultAvatar
-    }));
+    })) as Chatbot;
 
     try {
       // @ts-ignore
-      const folders = await directus.request(readFolders({ filter: { name: { _eq: 'llm' } }, limit: 1 }));
+      const folders = await directus.request(readFolders({ filter: { name: { _eq: 'llm' } }, limit: 1 })) as any[];
       if (folders && folders.length > 0) {
         const parentId = folders[0].id;
         // @ts-ignore
-        const newFolder = await directus.request(createFolder({ name: slug, parent: parentId }));
+        const newFolder = await directus.request(createFolder({ name: slug, parent: parentId })) as any;
         if (newFolder && newFolder.id) {
             // @ts-ignore
             await directus.request(updateItem('chatbot', result.id, { chatbot_folder: newFolder.id }));

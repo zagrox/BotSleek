@@ -1,5 +1,3 @@
-
-
 import { BotConfig, Plan } from '../types';
 import { directus, getAssetUrl } from './directus';
 import { readSingleton, readItems } from '@directus/sdk';
@@ -7,27 +5,26 @@ import { readSingleton, readItems } from '@directus/sdk';
 export const fetchCrmConfig = async (): Promise<Partial<BotConfig>> => {
   try {
     // Use the SDK to fetch the singleton 'configuration' collection
-    const configData = await directus.request(readSingleton('configuration'));
+    // We cast to any here because the SDK's inferred types for singletons can sometimes conflict with our expected schema
+    const configData = await directus.request(readSingleton('configuration')) as any;
 
     if (!configData) return {};
 
     // Map CMS fields (snake_case) to App Config (camelCase)
     const mappedConfig: Partial<BotConfig> = {};
 
-    if (configData.app_title) mappedConfig.appTitle = configData.app_title;
-    if (configData.app_slogan) mappedConfig.appSlogan = configData.app_slogan;
-    if (configData.name) mappedConfig.name = configData.name;
-    if (configData.description) mappedConfig.description = configData.description;
-    if (configData.system_instruction) mappedConfig.systemInstruction = configData.system_instruction;
-    if (configData.primary_color) mappedConfig.primaryColor = configData.primary_color;
-    if (configData.welcome_message) mappedConfig.welcomeMessage = configData.welcome_message;
-    if (configData.n8n_webhook_url) mappedConfig.n8nWebhookUrl = configData.n8n_webhook_url;
+    if (configData.app_title) mappedConfig.appTitle = String(configData.app_title);
+    if (configData.app_slogan) mappedConfig.appSlogan = String(configData.app_slogan);
+    if (configData.name) mappedConfig.name = String(configData.name);
+    if (configData.description) mappedConfig.description = String(configData.description);
+    if (configData.system_instruction) mappedConfig.systemInstruction = String(configData.system_instruction);
+    if (configData.primary_color) mappedConfig.primaryColor = String(configData.primary_color);
+    if (configData.welcome_message) mappedConfig.welcomeMessage = String(configData.welcome_message);
+    if (configData.n8n_webhook_url) mappedConfig.n8nWebhookUrl = String(configData.n8n_webhook_url);
     if (configData.temperature) mappedConfig.temperature = Number(configData.temperature);
 
     // Handle App Logo (Sidebar)
     if (configData.app_logo) {
-      // The SDK might return an ID string or an object depending on query depth.
-      // For readSingleton default, it usually returns the ID unless fields are specified.
       const logoId = typeof configData.app_logo === 'object' && configData.app_logo !== null 
         ? (configData.app_logo as any).id 
         : configData.app_logo;

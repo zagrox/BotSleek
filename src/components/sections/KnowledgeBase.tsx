@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Chatbot, DirectusFile, LLMJob, ProcessedFile, BuildStatus } from '../../types';
 import { directus, getAssetUrl } from '../../services/directus';
@@ -63,8 +62,8 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({ selectedChatbot, onUpdate
     if (!selectedChatbot) return;
     const pollJobs = async () => {
       try {
-        const result = await directus.request(readItems('llm', { fields: ['*', { llm_file: ['id'] }], filter: { llm_chatbot: { _eq: selectedChatbot.id } } })) as LLMJob[];
-        setLlmJobs(result);
+        const result = await directus.request(readItems('llm', { fields: ['*', { llm_file: ['id'] }], filter: { llm_chatbot: { _eq: selectedChatbot.id } } }));
+        setLlmJobs(result as unknown as LLMJob[]);
       } catch (err) {}
     };
     const intervalId = setInterval(pollJobs, 5000); 
@@ -80,7 +79,7 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({ selectedChatbot, onUpdate
       ]);
       const fetchedFiles = filesResult as DirectusFile[];
       setFiles(fetchedFiles);
-      setLlmJobs(jobsResult as LLMJob[]);
+      setLlmJobs(jobsResult as unknown as LLMJob[]);
       const currentTotalBytes = fetchedFiles.reduce((acc, f) => acc + (Number(f.filesize) || 0), 0);
       const currentTotalMB = Math.ceil(currentTotalBytes / (1024 * 1024));
       if (selectedChatbot && (selectedChatbot.chatbot_llm !== fetchedFiles.length || Number(selectedChatbot.chatbot_storage || 0) !== currentTotalMB)) {
@@ -91,7 +90,7 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({ selectedChatbot, onUpdate
   };
 
   const processedFiles: ProcessedFile[] = useMemo(() => files.map(file => {
-      const job = llmJobs.find(j => (j.llm_file as DirectusFile)?.id === file.id || j.llm_file === file.id);
+      const job = llmJobs.find(j => (j.llm_file as any)?.id === file.id || j.llm_file === file.id);
       return { id: file.id, name: file.filename_download, size: Number(file.filesize), uploadDate: new Date(file.uploaded_on).toLocaleDateString('en-US'), type: file.type, buildStatus: (job?.llm_status as BuildStatus) || 'idle', errorMessage: job?.llm_error, llmJobId: job?.id };
   }), [files, llmJobs]);
 
@@ -169,8 +168,8 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({ selectedChatbot, onUpdate
     try {
       const formData = new FormData();
       formData.append('title', file.name); formData.append('folder', folderId); formData.append('file', file);
-      const uploadedFile = await directus.request(uploadFiles(formData)) as DirectusFile;
-      const newJob = await directus.request(createItem('llm', { llm_chatbot: selectedChatbot.id, llm_file: uploadedFile.id, llm_status: 'ready' })) as LLMJob;
+      const uploadedFile = await directus.request(uploadFiles(formData)) as unknown as DirectusFile;
+      const newJob = await directus.request(createItem('llm', { llm_chatbot: selectedChatbot.id, llm_file: uploadedFile.id, llm_status: 'ready' })) as unknown as LLMJob;
       setLlmJobs(prev => [newJob, ...prev]);
       setFiles(prev => [uploadedFile, ...prev.filter(f => f.id !== optimisticFileId)]);
     } catch (err) { setError("File upload failed."); setFiles(prev => prev.filter(f => f.id !== optimisticFileId)); }

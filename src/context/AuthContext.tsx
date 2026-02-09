@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, PropsWithChildren } from 'react';
 import { directus } from '../services/directus';
 import { readMe, passwordRequest, passwordReset, createUser, readSingleton, updateMe, readItems, createItem, updateItem } from '@directus/sdk';
@@ -78,8 +77,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                  profile_company: 'My Company',
                  profile_color: '#3b82f6',
                  profile_chatbots: 0,
-                 profile_messages: "0",
-                 profile_storages: "0",
+                 profile_messages: 0,
+                 profile_storages: 0,
                  profile_llm: 0
              }));
          } catch (createErr) {
@@ -87,6 +86,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
          }
       }
 
+      // FIX: Use 'as unknown as User' to resolve strict type checking issues when Directus fields like avatar or role do not overlap with our interface
       setUser({ ...currentUser, profile: userProfile } as unknown as User);
     } catch (err) {
       setUser(null);
@@ -120,9 +120,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     try {
       let roleId = DEFAULT_ROLE_ID;
       try {
-        const config = await directus.request(readSingleton('configuration'));
+        const config = await directus.request(readSingleton('configuration')) as any;
         if (config && config.app_role) {
-          roleId = config.app_role;
+          roleId = String(config.app_role);
         }
       } catch (configErr) {
         console.warn("Could not fetch configuration for role ID, using default.", configErr);
@@ -202,14 +202,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
       if (Object.keys(userData).length > 0) {
           const res = await directus.request(updateMe(userData));
-          updatedUser = { ...updatedUser, ...res } as User;
+          // FIX: Convert the spread object to unknown first before casting to User to bypass property incompatibility errors
+          updatedUser = { ...updatedUser, ...res } as unknown as User;
       }
 
       if (profileData && user?.profile?.id) {
           // @ts-ignore
           const updatedProfile = await directus.request(updateItem('profile', user.profile.id, profileData));
           if (updatedUser) {
-              updatedUser = { ...updatedUser, profile: updatedProfile as UserProfile };
+              updatedUser = { ...updatedUser, profile: updatedProfile as unknown as UserProfile };
           }
       }
 
