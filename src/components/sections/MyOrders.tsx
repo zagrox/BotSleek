@@ -135,7 +135,7 @@ const MyOrders: React.FC<MyOrdersProps> = ({ onRenew }) => {
     
     const plan = plans.find(p => 
       p.id === Number(planId) || 
-      (typeof planId === 'object' && (planId as any)?.id === plan.id) ||
+      (typeof planId === 'object' && (planId as any)?.id === p.id) ||
       String(p.plan_name || '').toLowerCase() === String(planId || '').toLowerCase()
     );
     
