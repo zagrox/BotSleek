@@ -63,7 +63,7 @@
       // Register Service Worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          const swUrl = new URL('/sw.js', window.location.origin).href;
+          const swUrl = new URL('https://botsleek.com/sw.js', window.location.origin).href;
           navigator.serviceWorker.register(swUrl).then(registration => {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
           }).catch(registrationError => {
